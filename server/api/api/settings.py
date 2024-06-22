@@ -191,15 +191,3 @@ LOGIN_REDIRECT_URL = '/'
 SITE_ID = 1
 
 # Provider specific settings
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        'APP': {
-            'client_id': '690954503906-8ui1ojqksu462k161f6gt5lbug9g3ee9.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        }
-    }
-}
