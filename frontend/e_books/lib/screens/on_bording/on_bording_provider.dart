@@ -1,7 +1,10 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
+import 'package:e_books/local_storage/local_storage_provider.dart';
 import 'package:e_books/util/export.dart';
 import 'package:flutter/material.dart';
+
+import '../../local_storage/local_storage.dart';
 
 class OnBordingProvider extends ChangeNotifier {
   late PageController pageController;
@@ -59,9 +62,11 @@ class OnBordingProvider extends ChangeNotifier {
 
   void onMainButtonClicked(BuildContext context) async {
     if (buttonText == _START) {
-      // context.pushReplacementNamed("SignUp");
+      final LocalStorage localStorage = LocalStorage();
+
+      await localStorage.markOnboardingDone();
+      
       context.pushNamed("SignUp");
-      // Navigator.pushReplacementNamed(context, Routes.login);
     } else {
       currentPage = 2;
       _changeButtonText();

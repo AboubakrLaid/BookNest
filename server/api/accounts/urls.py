@@ -8,7 +8,8 @@ from .views import (
     verify_email,
     forgot_password,
     verify_forgot_password_code,
-    reset_password
+    reset_password,
+    check_username_uniquness
 )
 
 
@@ -22,4 +23,5 @@ urlpatterns = [
     path("forgot_password/", forgot_password, name="forgot_password"),
     path("verify_forgot_password_code/", verify_forgot_password_code, name="verify_forgot_password_code"),
     path("reset_password/", reset_password, name="reset_password"),
+    path("username-uniquness/", check_username_uniquness, name="check_username_uniquness")
 ]

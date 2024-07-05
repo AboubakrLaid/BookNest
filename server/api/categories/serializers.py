@@ -4,8 +4,13 @@ from .models import Category
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['name']
+        fields = ['id','name']
         model = Category
+    
+    
+    
+    
+    
         
 class SearchCategorySerializer(serializers.Serializer):
     count = serializers.IntegerField(read_only=True)

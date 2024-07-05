@@ -48,6 +48,7 @@ def validate_email(email):
 def register(request):
 
     email = request.data["email"]
+    # return Response({"password" : {"message": "This field is required."}, }, status=status.HTTP_400_BAD_REQUEST)
     is_valid_email = validate_email(email)
     if is_valid_email:
 
@@ -60,8 +61,8 @@ def register(request):
             code = random_verification_code(10_00_00, 99_99_99)
             EmailVerification.objects.create(user=user, verification_code=code)
 
-            token = Token.objects.create(user=user)
-            return Response({"Token": token.key}, status=status.HTTP_201_CREATED)
+            # token = Token.objects.create(user=user)
+            return Response({"success": True}, status=status.HTTP_201_CREATED)
 
         response_error = {
             "success": False,
@@ -70,7 +71,8 @@ def register(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(
-        {"error": "invalid email address"}, status=status.HTTP_400_BAD_REQUEST
+        {"success": True, "error": "invalid email address"},
+        status=status.HTTP_400_BAD_REQUEST,
     )
 
 
@@ -84,13 +86,23 @@ def my_login(request):
     user = authenticate(request=request, username=username, password=password)
 
     if user:
-        # login(request=request, user=user)
+
         token, created = Token.objects.get_or_create(user=user)
-        print(created)
-        return Response({"Token": token.key}, status=status.HTTP_201_CREATED)
+
+        # check if the user has completed the registration process
+        complete_registeration = True
+        if user.first_name == "" or user.last_name == "":
+            complete_registeration = False
+        return Response(
+            {
+                "completed_registration": complete_registeration,
+                "token": token.key,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     return Response(
-        {"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED
+        {"error": "Invalid username or password"}, status=status.HTTP_200_OK
     )
 
 
@@ -100,6 +112,7 @@ def my_login(request):
 def complete_register(request):
     print(request.data)
     serializer = CompleteUserProfileSerializer(request.user, data=request.data)
+
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
@@ -138,7 +151,6 @@ def send_email_verification_code(request):
     # Ema
     return Response(
         {
-            "success": True,
             "message": "A verification email has been sent to your email address. Please check your email to complete the registration process.",
         },
         status=status.HTTP_200_OK,
@@ -199,7 +211,15 @@ def forgot_password(request):
         )
     code = random_verification_code(100000, 999999)
     print(code)
-    obj = ResetPasswordVerification.objects.create(user=user, verification_code=code)
+    try:
+        obj = ResetPasswordVerification.objects.get(user=user)
+        obj.verification_code = code
+        obj.save()
+    except ResetPasswordVerification.DoesNotExist:
+        obj = ResetPasswordVerification.objects.create(
+            user=user, verification_code=code
+        )
+
     print(user)
 
     send_mail(
@@ -218,8 +238,7 @@ def forgot_password(request):
 
     return Response(
         {
-            "success": True,
-            "message": f"A verification email has been sent to {email}",
+            "message": f"the code has been sent to {email}",
         },
         status=status.HTTP_200_OK,
     )
@@ -262,12 +281,12 @@ def verify_forgot_password_code(request):
     if verification_code == obj.verification_code:
         obj.delete()
         return Response(
-            {"success": True, "message": "now you can reset your password"},
+            {"message": "now you can reset your password"},
             status=status.HTTP_200_OK,
         )
 
     return Response(
-        {"error": "invalid verification_code"},
+        {"error": "invalid code"},
         status=status.HTTP_400_BAD_REQUEST,
     )
 
@@ -302,6 +321,28 @@ def reset_password(request):
     serializer = ResetPasswordSerializer(instance=user, data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response({"success": True})
+        return Response({},status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# an endpoint to check if the username is unique
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def check_username_uniquness(request):
+
+    username = request.query_params.get("username")
+    print(username)
+    if username is None or username == "":
+        return Response(
+            {"success": False, "error": "username is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"success": False, "error": "username is already taken"},
+            status=status.HTTP_200_OK,
+        )
+
+    return Response({"success": True}, status=status.HTTP_200_OK)

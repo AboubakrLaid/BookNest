@@ -14,16 +14,27 @@ ThemeData kLightTheme = ThemeData(
   scaffoldBackgroundColor: const Color(0xFFF0F0F0),
   primaryColor: const Color(0xFF20C57A),
   secondaryHeaderColor: const Color(0xFFD9D9D9),
-
+ textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: Color(0xFF20C57A),
+    selectionColor: Color(0xFF20C57A),
+    selectionHandleColor: Color(0xFF20C57A),
+  )
  
 
 );
 
 ThemeData kDarkTheme = ThemeData(
+
   useMaterial3: true,
   brightness: Brightness.dark,
   fontFamily: GoogleFonts.inter().fontFamily,
   scaffoldBackgroundColor: const Color(0xFF232F38),
   primaryColor: const Color(0xFF20C57A),
   secondaryHeaderColor: const Color(0xFF343e46),
+
+  textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: Color(0xFF20C57A),
+    selectionColor: Color(0xFF20C57A),
+    selectionHandleColor: Color(0xFF20C57A),
+  )
 );

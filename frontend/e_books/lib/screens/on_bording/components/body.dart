@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:e_books/screens/on_bording/on_bording_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,9 @@ class OnBordingBody extends StatelessWidget {
       "Tailor your reading journey with personalized recommendations, track your favorite categories, and manage your reading list. Your perfect book is just a search away."
     ];
     return Expanded(
-      child: Consumer<OnBordingProvider>(builder: (context, state, child) {
-        return PageView.builder(
+      child: Consumer<OnBordingProvider>(
+        builder: (context, state, child) {
+          return PageView.builder(
             itemCount: 3,
             controller: state.pageController,
             onPageChanged: (value) => state.onPageChanged(value),
@@ -42,7 +44,6 @@ class OnBordingBody extends StatelessWidget {
                     child: SvgPicture.asset(
                       images[index],
                       width: kWidth,
-                  
                       height: 0.3 * kHeight,
                     ),
                   ),
@@ -57,19 +58,22 @@ class OnBordingBody extends StatelessWidget {
                     ),
                   ),
                   // Gap(24.h),
-                  Text(
+                  AutoSizeText(
                     descriptions[index],
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                      height: 0.9,
+                      height: 1,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w400,
                     ),
+                    maxLines: 4,
                   ),
                 ],
               );
-            });
-      }),
+            },
+          );
+        },
+      ),
     );
   }
 }
